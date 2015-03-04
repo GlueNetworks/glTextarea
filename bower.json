@@ -1,6 +1,6 @@
 {
   "name": "glTextarea",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "dependencies": {
     "GlueJasmineMatchers": "GlueNetworks/GlueJasmineMatchers#0.0.2",
     "angular": "1.3.14",
@@ -18,6 +18,6 @@
   },
   "devDependencies": {},
   "meta": {
-    "changesetId": "55272db387c3493afa04f45cccb0b6d1939785d1"
+    "changesetId": "5ce14f69cb954f19a84ce59f593617ae27521958"
   }
 }
