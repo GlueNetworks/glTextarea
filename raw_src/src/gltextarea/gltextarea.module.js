@@ -1,1 +1,1 @@
-angular.module('glTextarea', []);
+angular.module('glTextarea', ['glSuperScroll']);

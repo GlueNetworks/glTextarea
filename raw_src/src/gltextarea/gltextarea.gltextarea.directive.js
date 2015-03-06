@@ -4,15 +4,13 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
 
 	return {
   	restrict: 'E',
-    replace: true,
     scope: {
     	settings: '=',
     	api: '='
     },
     link: function (scope, element, attrs, controller) {
 
-      var elRect, dragArea;
-
+      var elementAll;
       var elementTextarea;
       var elementError;
       var elementLabel;
@@ -20,15 +18,19 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
 
       var classEmpty = 'gl-empty';
       var classInvalid = 'gl-invalid';
+      var classFocus = 'gl-focus';
+      var classDisabled = 'gl-disabled';
 
-      var templateTextarea = '<textarea class="gl-textarea-input" placeholder="{{api._data.placeholder}}" data-ng-model="api._data.value"></textarea>';
+      var templateAll = '<div class="gl-textarea-container"></div>';  // necessary to house textarea and superscroll elements.
+      var templateTextarea = '<textarea class="gl-textarea-input" data-gl-super-scroll data-ng-attr-placeholder="{{api._data.placeholder}}" data-ng-model="api._data.value"></textarea>';
       var templateError = '<p class="gl-textarea-error">{{api._data.error}}</p>';
       var templateLabel = '<label class="gl-textarea-view-label">{{api._data.label}}</label>';
       var templateValue = '<p class="gl-textarea-view-value">{{api._data.value}}</p>';
 
+      elementAll = angular.element(templateAll);
 
       scope.api = angular.isUndefined(scope.api) ? {} : scope.api;
-      console.log('scope.api'); console.log(scope.api);
+      scope.settings = angular.isUndefined(scope.settings) ? {} : scope.settings;
 
       scope.api._data = {};
 
@@ -44,6 +46,7 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
       scope.api._data.error = angular.isUndefined(scope.settings.error) ? undefined : scope.settings.error;
       scope.api._data.editable = angular.isUndefined(scope.settings.editable) ? true : scope.settings.editable;
       scope.api._data.emitEvents = angular.isUndefined(scope.settings.emitEvents) ? ['focus','blur','change','keypress','input'] : scope.settings.emitEvents;
+
 
       scope.api.view = function(){ setViewMode(); }
       scope.api.edit = function(){ setEditMode(); }
@@ -81,11 +84,13 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
       scope.api.disable = function(){
         scope.api._data.disabled = true;
         elementTextarea.attr('disabled',true);
+        elementAll.addClass(classDisabled);
       }
 
       scope.api.enable = function(){
         scope.api._data.disabled = false;
         elementTextarea.removeAttr('disabled');
+        elementAll.removeClass(classDisabled);
       }
 
 
@@ -123,7 +128,16 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
           });
         });
 
-        return $compile(elementTextarea)(scope);
+
+        elementTextarea.bind('focus',function(){
+          elementAll.addClass(classFocus);
+        });
+        elementTextarea.bind('blur',function(){
+          elementAll.removeClass(classFocus);
+        });
+
+        return elementTextarea;
+        //return $compile(elementTextarea)(scope);
       }
 
       scope.$watch('api._data.value',function(){
@@ -144,9 +158,11 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
       }
 
       var setEditMode = function(){
+        elementAll = angular.element(templateAll);
         scope.api._data.editable = true;
         element.children().remove();
-        element.append(getInputEl());
+        elementAll.append(getInputEl());
+        element.append($compile(elementAll)(scope));
         errorMsgCheck();
         emptyCheck();
       }
@@ -155,8 +171,10 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
         if(!angular.isUndefined(elementTextarea)){
           if(!angular.isUndefined(scope.api._data.value) && scope.api._data.value.length > 0){
             elementTextarea.removeClass(classEmpty);
+            elementAll.removeClass(classEmpty);
           }else{
             elementTextarea.addClass(classEmpty);
+            elementAll.addClass(classEmpty);
           }
         }
       }
@@ -166,11 +184,13 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
         if(scope.api._data.editable){
           if(scope.api._data.valid){
             elementTextarea.removeClass(classInvalid);
+            elementAll.removeClass(classInvalid);
           }else{
             elementTextarea.addClass(classInvalid);
+            elementAll.addClass(classInvalid);
             if(angular.isString(scope.api._data.error)){
-              elementError = $compile(angular.element(templateError))(scope)
-              element.append(elementError);
+              elementError = angular.element(templateError);
+              element.append($compile(elementError)(scope));
             }
           }
         }
@@ -183,7 +203,6 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
       }else{
         setEditMode();
       }
-
 
 		}
 	};

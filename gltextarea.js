@@ -1,22 +1,22 @@
 /*! 
-  glTextarea v(0.0.6) 
+  glTextarea v(0.0.7) 
   (c) 2013-2015
   https://gluenetworks.kilnhg.com/Code/Web-Development
-  Release Date: 2015-03-03 
+  Release Date: 2015-03-06 
 */
-angular.module("glTextarea", []), angular.module("glTextarea").directive("glTextarea", [ "$compile", function($compile) {
+angular.module("glTextarea", [ "glSuperScroll" ]), angular.module("glTextarea").directive("glTextarea", [ "$compile", function($compile) {
     "use strict";
     return {
         restrict: "E",
-        replace: !0,
         scope: {
             settings: "=",
             api: "="
         },
         link: function(scope, element) {
-            var elementTextarea, elementError, elementLabel, elementValue, classEmpty = "gl-empty", classInvalid = "gl-invalid", templateTextarea = '<textarea class="gl-textarea-input" placeholder="{{api._data.placeholder}}" data-ng-model="api._data.value"></textarea>', templateError = '<p class="gl-textarea-error">{{api._data.error}}</p>', templateLabel = '<label class="gl-textarea-view-label">{{api._data.label}}</label>', templateValue = '<p class="gl-textarea-view-value">{{api._data.value}}</p>';
-            scope.api = angular.isUndefined(scope.api) ? {} : scope.api, console.log("scope.api"), 
-            console.log(scope.api), scope.api._data = {}, // MAP SETTINGS
+            var elementAll, elementTextarea, elementError, elementLabel, elementValue, classEmpty = "gl-empty", classInvalid = "gl-invalid", classFocus = "gl-focus", classDisabled = "gl-disabled", templateAll = '<div class="gl-textarea-container"></div>', templateTextarea = '<textarea class="gl-textarea-input" data-gl-super-scroll data-ng-attr-placeholder="{{api._data.placeholder}}" data-ng-model="api._data.value"></textarea>', templateError = '<p class="gl-textarea-error">{{api._data.error}}</p>', templateLabel = '<label class="gl-textarea-view-label">{{api._data.label}}</label>', templateValue = '<p class="gl-textarea-view-value">{{api._data.value}}</p>';
+            elementAll = angular.element(templateAll), scope.api = angular.isUndefined(scope.api) ? {} : scope.api, 
+            scope.settings = angular.isUndefined(scope.settings) ? {} : scope.settings, scope.api._data = {}, 
+            // MAP SETTINGS
             scope.api._data.value = angular.isUndefined(scope.settings.value) ? void 0 : scope.settings.value, 
             scope.api._data.cols = angular.isUndefined(scope.settings.cols) ? void 0 : scope.settings.cols, 
             scope.api._data.rows = angular.isUndefined(scope.settings.rows) ? void 0 : scope.settings.rows, 
@@ -50,9 +50,9 @@ angular.module("glTextarea", []), angular.module("glTextarea").directive("glText
             }, scope.api.getPlaceholder = function() {
                 return scope.api._data.placeholder;
             }, scope.api.disable = function() {
-                scope.api._data.disabled = !0, elementTextarea.attr("disabled", !0);
+                scope.api._data.disabled = !0, elementTextarea.attr("disabled", !0), elementAll.addClass(classDisabled);
             }, scope.api.enable = function() {
-                scope.api._data.disabled = !1, elementTextarea.removeAttr("disabled");
+                scope.api._data.disabled = !1, elementTextarea.removeAttr("disabled"), elementAll.removeClass(classDisabled);
             };
             var getInputEl = function() {
                 //elementTextarea[0].rows = scope.api._data.rows;
@@ -66,7 +66,11 @@ angular.module("glTextarea", []), angular.module("glTextarea").directive("glText
                     elementTextarea.bind(value, function(evt) {
                         scope.$emit(scope.settings.name + "-" + value, evt);
                     });
-                }), $compile(elementTextarea)(scope);
+                }), elementTextarea.bind("focus", function() {
+                    elementAll.addClass(classFocus);
+                }), elementTextarea.bind("blur", function() {
+                    elementAll.removeClass(classFocus);
+                }), elementTextarea;
             };
             scope.$watch("api._data.value", function() {
                 emptyCheck();
@@ -76,14 +80,17 @@ angular.module("glTextarea", []), angular.module("glTextarea").directive("glText
                 element.append(elementLabel)), elementValue = $compile(angular.element(templateValue))(scope), 
                 element.append(elementValue);
             }, setEditMode = function() {
-                scope.api._data.editable = !0, element.children().remove(), element.append(getInputEl()), 
-                errorMsgCheck(), emptyCheck();
+                elementAll = angular.element(templateAll), scope.api._data.editable = !0, element.children().remove(), 
+                elementAll.append(getInputEl()), element.append($compile(elementAll)(scope)), errorMsgCheck(), 
+                emptyCheck();
             }, emptyCheck = function() {
-                angular.isUndefined(elementTextarea) || (!angular.isUndefined(scope.api._data.value) && scope.api._data.value.length > 0 ? elementTextarea.removeClass(classEmpty) : elementTextarea.addClass(classEmpty));
+                angular.isUndefined(elementTextarea) || (!angular.isUndefined(scope.api._data.value) && scope.api._data.value.length > 0 ? (elementTextarea.removeClass(classEmpty), 
+                elementAll.removeClass(classEmpty)) : (elementTextarea.addClass(classEmpty), elementAll.addClass(classEmpty)));
             }, errorMsgCheck = function() {
-                angular.isUndefined(elementError) || elementError.remove(), scope.api._data.editable && (scope.api._data.valid ? elementTextarea.removeClass(classInvalid) : (elementTextarea.addClass(classInvalid), 
-                angular.isString(scope.api._data.error) && (elementError = $compile(angular.element(templateError))(scope), 
-                element.append(elementError))));
+                angular.isUndefined(elementError) || elementError.remove(), scope.api._data.editable && (scope.api._data.valid ? (elementTextarea.removeClass(classInvalid), 
+                elementAll.removeClass(classInvalid)) : (elementTextarea.addClass(classInvalid), 
+                elementAll.addClass(classInvalid), angular.isString(scope.api._data.error) && (elementError = angular.element(templateError), 
+                element.append($compile(elementError)(scope)))));
             };
             // INIT
             angular.isUndefined(scope.settings.view) || 1 != scope.settings.view ? setEditMode() : setViewMode();
