@@ -1,5 +1,5 @@
 /*! 
-  glTextarea v(0.0.7) 
+  glTextarea v(0.0.9) 
   (c) 2013-2015
   https://gluenetworks.kilnhg.com/Code/Web-Development
   Release Date: 2015-03-06 
@@ -58,8 +58,8 @@ angular.module("glTextarea", [ "glSuperScroll" ]), angular.module("glTextarea").
                 //elementTextarea[0].rows = scope.api._data.rows;
                 // emit events
                 return elementTextarea = angular.element(templateTextarea), elementTextarea.attr("type", scope.api._data.type), 
-                elementTextarea.val(scope.api._data.value), scope.api._data.disabled && elementTextarea.attr("disabled", !0), 
-                angular.isUndefined(scope.api._data.rows) || elementTextarea.attr("rows", scope.api._data.rows), 
+                elementTextarea.val(scope.api._data.value), scope.api._data.disabled && (elementTextarea.attr("disabled", !0), 
+                elementAll.addClass(classDisabled)), angular.isUndefined(scope.api._data.rows) || elementTextarea.attr("rows", scope.api._data.rows), 
                 angular.isUndefined(scope.api._data.cols) || elementTextarea.attr("cols", scope.api._data.cols), 
                 angular.isString(scope.api._data.value) && "" != scope.api._data.value ? elementTextarea.removeClass(classEmpty) : elementTextarea.addClass(classEmpty), 
                 angular.forEach(scope.api._data.emitEvents, function(value) {

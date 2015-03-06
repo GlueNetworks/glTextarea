@@ -103,6 +103,7 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
 
         if(scope.api._data.disabled){
           elementTextarea.attr('disabled',true);
+          elementAll.addClass(classDisabled);
         }
 
         if(!angular.isUndefined(scope.api._data.rows)){
