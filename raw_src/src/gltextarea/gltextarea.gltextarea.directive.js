@@ -45,8 +45,18 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
       scope.api._data.placeholder = angular.isUndefined(scope.settings.placeholder) ? undefined : scope.settings.placeholder;
       scope.api._data.error = angular.isUndefined(scope.settings.error) ? undefined : scope.settings.error;
       scope.api._data.editable = angular.isUndefined(scope.settings.editable) ? true : scope.settings.editable;
-      scope.api._data.emitEvents = angular.isUndefined(scope.settings.emitEvents) ? ['focus','blur','change','keypress','input'] : scope.settings.emitEvents;
 
+      scope.api._data.onKeyDown = angular.isFunction(scope.settings.onKeyDown) ? scope.settings.onKeyDown : undefined;
+      scope.api._data.onKeyPress = angular.isFunction(scope.settings.onKeyPress) ? scope.settings.onKeyPress : undefined;
+      scope.api._data.onKeyUp = angular.isFunction(scope.settings.onKeyUp) ? scope.settings.onKeyUp : undefined;
+      scope.api._data.onInput = angular.isFunction(scope.settings.onInput) ? scope.settings.onInput : undefined;
+      scope.api._data.onFocus = angular.isFunction(scope.settings.onFocus) ? scope.settings.onFocus : undefined;
+      scope.api._data.onBlur = angular.isFunction(scope.settings.onBlur) ? scope.settings.onBlur : undefined;
+      scope.api._data.onMouseOver = angular.isFunction(scope.settings.onMouseOver) ? scope.settings.onMouseOver : undefined;
+      scope.api._data.onMouseOut = angular.isFunction(scope.settings.onMouseOut) ? scope.settings.onMouseOut : undefined;
+      scope.api._data.onMouseMove = angular.isFunction(scope.settings.onMouseMove) ? scope.settings.onMouseMove : undefined;
+      scope.api._data.onMouseDown = angular.isFunction(scope.settings.onMouseDown) ? scope.settings.onMouseDown : undefined;
+      scope.api._data.onMouseUp = angular.isFunction(scope.settings.onMouseUp) ? scope.settings.onMouseUp : undefined;
 
       scope.api.view = function(){ setViewMode(); }
       scope.api.edit = function(){ setEditMode(); }
@@ -122,12 +132,16 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
           elementTextarea.addClass(classEmpty);
         }
 
-        // emit events
-        angular.forEach(scope.api._data.emitEvents,function(value,key){
-          elementTextarea.bind(value,function(evt){
-            scope.$emit(scope.settings.name + "-" + value,evt);
-          });
-        });
+        // event bindings
+        if(!angular.isUndefined(scope.api._data.onKeyDown)){  elementTextarea.bind('keydown',function(evt){ scope.api._data.onKeyDown(evt); }) }
+        if(!angular.isUndefined(scope.api._data.onKeyUp)){    elementTextarea.bind('keyup',function(evt){ scope.api._data.onKeyUp(evt); }) }
+        if(!angular.isUndefined(scope.api._data.onKeyPress)){ elementTextarea.bind('keypress',function(evt){ scope.api._data.onKeyPress(evt); }) }
+        if(!angular.isUndefined(scope.api._data.onInput)){    elementTextarea.bind('input',function(evt){ scope.api._data.onInput(evt); }) }
+        if(!angular.isUndefined(scope.api._data.onMouseOver)){elementTextarea.bind('mouseover',function(evt){ scope.api._data.onMouseOver(evt); }) }
+        if(!angular.isUndefined(scope.api._data.onMouseOut)){ elementTextarea.bind('mouseout',function(evt){ scope.api._data.onMouseOut(evt); }) }
+        if(!angular.isUndefined(scope.api._data.onMouseMove)){elementTextarea.bind('mousemove',function(evt){ scope.api._data.onMouseMove(evt); }) }
+        if(!angular.isUndefined(scope.api._data.onMouseDown)){elementTextarea.bind('mousedown',function(evt){ scope.api._data.onMouseDown(evt); }) }
+        if(!angular.isUndefined(scope.api._data.onMouseUp)){  elementTextarea.bind('mouseup',function(evt){ scope.api._data.onMouseUp(evt); }) }
 
 
         elementTextarea.bind('focus',function(){

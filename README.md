@@ -28,9 +28,15 @@ An interface to both view and edit a single line of text. It provides both an ed
 * columns
 * invalid - pass true or error message
 * disabled
-* type - set the input type, defaults to text
-* emitEvents - accepts an array of string event names to be emitted. By default they are focus, blur, change, keypress, input. 
- Events are emitted with the emit name formatted as: <settings.name>-<eventanme>  eg. "firstname-keypress"
+* onKeyDown - define a callback event for keydown
+* onKeyPress - define a callback event for keypress
+* onKeyUp - define a callback event for keyup
+* onInput - define a callback event for input
+* onMouseOver = define a callback event for mouseover
+* onMouseOut = define a callback event for mouseout
+* onMouseMove = define a callback event for mousemove
+* onMouseDown = define a callback event for mousedown
+* onMouseUp = define a callback event for mouseup
 
 ### Example 
 
