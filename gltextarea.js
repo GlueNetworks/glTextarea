@@ -1,8 +1,8 @@
 /*! 
-  glTextarea v(0.0.10) 
+  glTextarea v(0.0.11) 
   (c) 2013-2015
   https://gluenetworks.kilnhg.com/Code/Web-Development
-  Release Date: 2015-03-12 
+  Release Date: 2015-03-13 
 */
 angular.module("glTextarea", [ "glSuperScroll" ]), angular.module("glTextarea").directive("glTextarea", [ "$compile", function($compile) {
     "use strict";
@@ -13,7 +13,7 @@ angular.module("glTextarea", [ "glSuperScroll" ]), angular.module("glTextarea").
             api: "="
         },
         link: function(scope, element) {
-            var elementAll, elementTextarea, elementError, elementLabel, elementValue, classEmpty = "gl-empty", classInvalid = "gl-invalid", classFocus = "gl-focus", classDisabled = "gl-disabled", templateAll = '<div class="gl-textarea-container"></div>', templateTextarea = '<textarea class="gl-textarea-input" data-gl-super-scroll data-ng-attr-placeholder="{{api._data.placeholder}}" data-ng-model="api._data.value"></textarea>', templateError = '<p class="gl-textarea-error">{{api._data.error}}</p>', templateLabel = '<label class="gl-textarea-view-label">{{api._data.label}}</label>', templateValue = '<p class="gl-textarea-view-value">{{api._data.value}}</p>';
+            var elementAll, elementTextarea, elementError, elementLabel, elementValue, childScope = scope.$new(), classEmpty = "gl-empty", classInvalid = "gl-invalid", classFocus = "gl-focus", classDisabled = "gl-disabled", templateAll = '<div class="gl-textarea-container"></div>', templateTextarea = '<textarea class="gl-textarea-input" data-gl-super-scroll data-ng-attr-placeholder="{{api._data.placeholder}}" data-ng-model="api._data.value"></textarea>', templateError = '<p class="gl-textarea-error">{{api._data.error}}</p>', templateLabel = '<label class="gl-textarea-view-label">{{api._data.label}}</label>', templateValue = '<p class="gl-textarea-view-value">{{api._data.value}}</p>';
             elementAll = angular.element(templateAll), scope.api = angular.isUndefined(scope.api) ? {} : scope.api, 
             scope.settings = angular.isUndefined(scope.settings) ? {} : scope.settings, scope.api._data = {}, 
             // MAP SETTINGS
@@ -104,9 +104,9 @@ angular.module("glTextarea", [ "glSuperScroll" ]), angular.module("glTextarea").
                 element.append(elementLabel)), elementValue = $compile(angular.element(templateValue))(scope), 
                 element.append(elementValue);
             }, setEditMode = function() {
-                elementAll = angular.element(templateAll), scope.api._data.editable = !0, element.children().remove(), 
-                elementAll.append(getInputEl()), element.append($compile(elementAll)(scope)), errorMsgCheck(), 
-                emptyCheck();
+                childScope.$destroy(), element.children().remove(), childScope = scope.$new(), elementAll = angular.element(templateAll), 
+                scope.api._data.editable = !0, elementAll.append(getInputEl()), element.append($compile(elementAll)(childScope)), 
+                errorMsgCheck(), emptyCheck();
             }, emptyCheck = function() {
                 angular.isUndefined(elementTextarea) || (!angular.isUndefined(scope.api._data.value) && scope.api._data.value.length > 0 ? (elementTextarea.removeClass(classEmpty), 
                 elementAll.removeClass(classEmpty)) : (elementTextarea.addClass(classEmpty), elementAll.addClass(classEmpty)));
@@ -116,7 +116,17 @@ angular.module("glTextarea", [ "glSuperScroll" ]), angular.module("glTextarea").
                 elementAll.addClass(classInvalid), angular.isString(scope.api._data.error) && (elementError = angular.element(templateError), 
                 element.append($compile(elementError)(scope)))));
             };
-            // INIT
+            scope.$on("$destroy", function() {
+                angular.isUndefined(scope.api._data.onKeyDown) || elementTextarea.unbind("keydown"), 
+                angular.isUndefined(scope.api._data.onKeyUp) || elementTextarea.unbind("keyup"), 
+                angular.isUndefined(scope.api._data.onKeyPress) || elementTextarea.unbind("keypress"), 
+                angular.isUndefined(scope.api._data.onInput) || elementTextarea.unbind("input"), 
+                angular.isUndefined(scope.api._data.onMouseOver) || elementTextarea.unbind("mouseover"), 
+                angular.isUndefined(scope.api._data.onMouseOut) || elementTextarea.unbind("mouseout"), 
+                angular.isUndefined(scope.api._data.onMouseMove) || elementTextarea.unbind("mousemove"), 
+                angular.isUndefined(scope.api._data.onMouseDown) || elementTextarea.unbind("mousedown"), 
+                angular.isUndefined(scope.api._data.onMouseUp) || elementTextarea.unbind("mouseup");
+            }), // INIT
             angular.isUndefined(scope.settings.view) || 1 != scope.settings.view ? setEditMode() : setViewMode();
         }
     };

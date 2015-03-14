@@ -10,6 +10,8 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
     },
     link: function (scope, element, attrs, controller) {
 
+      var childScope = scope.$new();
+
       var elementAll;
       var elementTextarea;
       var elementError;
@@ -173,11 +175,15 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
       }
 
       var setEditMode = function(){
+
+        childScope.$destroy();
+        element.children().remove();
+        childScope = scope.$new();
+
         elementAll = angular.element(templateAll);
         scope.api._data.editable = true;
-        element.children().remove();
         elementAll.append(getInputEl());
-        element.append($compile(elementAll)(scope));
+        element.append($compile(elementAll)(childScope));
         errorMsgCheck();
         emptyCheck();
       }
@@ -210,6 +216,18 @@ angular.module('glTextarea').directive('glTextarea', ["$compile", function ($com
           }
         }
       }
+
+      scope.$on('$destroy',function(){
+        if(!angular.isUndefined(scope.api._data.onKeyDown)){  elementTextarea.unbind('keydown') }
+        if(!angular.isUndefined(scope.api._data.onKeyUp)){    elementTextarea.unbind('keyup') }
+        if(!angular.isUndefined(scope.api._data.onKeyPress)){ elementTextarea.unbind('keypress') }
+        if(!angular.isUndefined(scope.api._data.onInput)){    elementTextarea.unbind('input') }
+        if(!angular.isUndefined(scope.api._data.onMouseOver)){elementTextarea.unbind('mouseover') }
+        if(!angular.isUndefined(scope.api._data.onMouseOut)){ elementTextarea.unbind('mouseout') }
+        if(!angular.isUndefined(scope.api._data.onMouseMove)){elementTextarea.unbind('mousemove') }
+        if(!angular.isUndefined(scope.api._data.onMouseDown)){elementTextarea.unbind('mousedown') }
+        if(!angular.isUndefined(scope.api._data.onMouseUp)){  elementTextarea.unbind('mouseup') }
+      });
 
       // INIT
 
